@@ -41,6 +41,10 @@ class ScoreBoardView: UIView {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[two]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[three]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[four]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        
+        addConstraint(NSLayoutConstraint(item: team1View, attribute: .width, relatedBy: .equal, toItem: team2View, attribute: .width, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: team2View, attribute: .width, relatedBy: .equal, toItem: team3View, attribute: .width, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: team3View, attribute: .width, relatedBy: .equal, toItem: team4View, attribute: .width, multiplier: 1.0, constant: 0.0))
     }
 }
 

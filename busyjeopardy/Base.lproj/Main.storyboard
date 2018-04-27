@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Inl-2a-thY">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -13,7 +13,6 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="busyjeopardy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -21,8 +20,69 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" id="pMQ-xd-BRB"/>
+                    <connections>
+                        <segue destination="ktp-82-TLg" kind="presentation" identifier="presentQuestion" id="gTP-iu-eUc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1080.8" y="133.5832083958021"/>
+        </scene>
+        <!--Question Presentation View Controller-->
+        <scene sceneID="OlM-bk-qJL">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fyQ-aE-DIJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="ktp-82-TLg" customClass="QuestionPresentationViewController" customModule="busyjeopardy" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zR6-E7-7Bc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Srp-kq-SIf">
+                                <rect key="frame" x="0.0" y="567" width="375" height="100"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z2U-br-zv5">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="z2U-br-zv5" secondAttribute="bottom" constant="108" id="4t3-LI-f1d"/>
+                            <constraint firstAttribute="trailing" secondItem="z2U-br-zv5" secondAttribute="trailing" id="Bpl-Y6-Xf1"/>
+                            <constraint firstItem="Srp-kq-SIf" firstAttribute="top" secondItem="z2U-br-zv5" secondAttribute="bottom" constant="8" id="EBO-v2-zDh"/>
+                            <constraint firstItem="z2U-br-zv5" firstAttribute="top" secondItem="zR6-E7-7Bc" secondAttribute="top" id="RgX-qE-lXX"/>
+                            <constraint firstItem="z2U-br-zv5" firstAttribute="leading" secondItem="zR6-E7-7Bc" secondAttribute="leading" id="ie5-da-KOU"/>
+                            <constraint firstItem="z2U-br-zv5" firstAttribute="trailing" secondItem="Srp-kq-SIf" secondAttribute="trailing" id="mmo-XI-omk"/>
+                            <constraint firstItem="z2U-br-zv5" firstAttribute="leading" secondItem="Srp-kq-SIf" secondAttribute="leading" id="qOP-kO-nh7"/>
+                            <constraint firstItem="Srp-kq-SIf" firstAttribute="bottom" secondItem="6ns-OO-hcc" secondAttribute="bottom" id="uJm-fq-hCe"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6ns-OO-hcc"/>
+                    </view>
+                    <connections>
+                        <outlet property="videoView" destination="z2U-br-zv5" id="cr5-M8-oiF"/>
+                    </connections>
                 </viewController>
             </objects>
+            <point key="canvasLocation" x="1893.5999999999999" y="130.88455772113943"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="gda-Ly-Qm4">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="Inl-2a-thY" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="l9Q-JZ-5zK">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="pmr-hR-s8C"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HP3-g7-YGu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="244" y="134"/>
         </scene>
     </scenes>
 </document>

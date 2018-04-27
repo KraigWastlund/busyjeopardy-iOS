@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06206607EDB6BDE03DEB9347 /* Pods_busyjeopardy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A451A6DF8D2B28191AC3316F /* Pods_busyjeopardy.framework */; };
+		648319A72093C91C001A2855 /* JeopardyQuestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648319A62093C91C001A2855 /* JeopardyQuestions.swift */; };
 		649738FE20937FA300B297B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649738FD20937FA300B297B1 /* AppDelegate.swift */; };
 		6497390020937FA300B297B1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649738FF20937FA300B297B1 /* ViewController.swift */; };
 		6497390320937FA300B297B1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6497390120937FA300B297B1 /* Main.storyboard */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		0E760C4692EB82B1D0BB4C7E /* Pods-busyjeopardy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-busyjeopardy.release.xcconfig"; path = "Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy.release.xcconfig"; sourceTree = "<group>"; };
+		648319A62093C91C001A2855 /* JeopardyQuestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JeopardyQuestions.swift; sourceTree = "<group>"; };
 		649738FA20937FA300B297B1 /* busyjeopardy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = busyjeopardy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		649738FD20937FA300B297B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		649738FF20937FA300B297B1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -76,12 +78,13 @@
 			children = (
 				649738FD20937FA300B297B1 /* AppDelegate.swift */,
 				649738FF20937FA300B297B1 /* ViewController.swift */,
+				648319A62093C91C001A2855 /* JeopardyQuestions.swift */,
+				649739142093829B00B297B1 /* ScoreBoardView.swift */,
 				6497390120937FA300B297B1 /* Main.storyboard */,
 				6497390720937FA400B297B1 /* Assets.xcassets */,
 				6497390920937FA400B297B1 /* LaunchScreen.storyboard */,
 				6497390C20937FA400B297B1 /* Info.plist */,
 				6497390420937FA300B297B1 /* busyjeopardy.xcdatamodeld */,
-				649739142093829B00B297B1 /* ScoreBoardView.swift */,
 			);
 			path = busyjeopardy;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				649738FE20937FA300B297B1 /* AppDelegate.swift in Sources */,
 				649739152093829B00B297B1 /* ScoreBoardView.swift in Sources */,
 				6497390620937FA300B297B1 /* busyjeopardy.xcdatamodeld in Sources */,
+				648319A72093C91C001A2855 /* JeopardyQuestions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
