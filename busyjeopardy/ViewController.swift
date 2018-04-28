@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     let scoreBoard = ScoreBoardView()
     let categoryTitlesView = CategoryTitlesView()
     var jeopardyCollectionView: UICollectionView!
+    
+    var currentTeam: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,13 +108,36 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
-        cell.isSelected = true
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
-        cell.isSelected = false
+        var category: String!
+        var points: String!
+        if indexPath.row < 6 {
+            category = categoryTitlesView.titleLabel1.text
+            points = "100"
+        } else if indexPath.row < 12 {
+            category = categoryTitlesView.titleLabel2.text
+            points = "200"
+        } else if indexPath.row < 18 {
+            category = categoryTitlesView.titleLabel3.text
+            points = "300"
+        } else if indexPath.row < 24 {
+            category = categoryTitlesView.titleLabel4.text
+            points = "400"
+        } else if indexPath.row < 30 {
+            category = categoryTitlesView.titleLabel5.text
+            points = "500"
+        } else {
+            category = categoryTitlesView.titleLabel6.text
+            points = "600"
+        }
+        let msg = "Category: \(category!) \n Points: \(points!)"
+        let alert = UIAlertController(title: "You sure?", message: msg, preferredStyle: .alert)
+        let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
+            let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
+            cell.userDidSelect = true
+        }
+        alert.addAction(action)
+        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+        self.present(alert, animated:true, completion: nil)
     }
 }
 
@@ -125,7 +150,9 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
         
         if image != nil || url != nil {
             let vc = MediaQuestionPresentationViewController()
+            vc.delegate = self
             vc.text = question
+            vc.points = y
             vc.image = image
             vc.videoURL = url
             let nc = UINavigationController(rootViewController: vc)
@@ -133,11 +160,55 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
             self.present(nc, animated: true, completion: nil)
         } else {
             let vc = TextQuestionPresentationViewController()
+            vc.delegate = self
+            vc.points = y
             vc.text = question
             let nc = UINavigationController(rootViewController: vc)
             nc.isNavigationBarHidden = true
             self.present(nc, animated: true, completion: nil)
         }
+    }
+}
+
+extension ViewController: QuestionPresentationEnded {
+    func didEnd(points: Int) {
+        
+        let alert = UIAlertController(title: "Correct?", message: "Did they get it right?", preferredStyle: .alert)
+        let action = UIAlertAction(title: "YES", style: .default) { [weak self] (alert: UIAlertAction) in
+            var p: Int = 0
+            switch points {
+            case 0:
+                p = 100
+            case 1:
+                p = 200
+            case 2:
+                p = 300
+            case 3:
+                p = 400
+            case 4:
+                p = 500
+            case 5:
+                p = 600
+            default:
+                assert(false)
+            }
+            
+            switch self?.currentTeam {
+            case 0:
+                self?.scoreBoard.team1View.points = "\(p)"
+            case 1:
+                self?.scoreBoard.team2View.points = "\(p)"
+            case 2:
+                self?.scoreBoard.team3View.points = "\(p)"
+            case 3:
+                self?.scoreBoard.team4View.points = "\(p)"
+            default:
+                assert(false)
+            }
+        }
+        alert.addAction(action)
+        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+        self.present(alert, animated:true, completion: nil)
     }
 }
 
@@ -155,12 +226,12 @@ class JeopardyCollectionCell: UICollectionViewCell {
     
     weak var selectionDelegate: JeopardyCollectionCellSelectionDelegate?
     
-    override var isSelected: Bool {
+    var userDidSelect: Bool? {
         didSet {
             if label.backgroundColor != selectionColor {
                 self.selectionDelegate?.didSelect(x: self.x, y: self.y)
             }
-            if isSelected == true {
+            if userDidSelect == true {
                 label.backgroundColor = selectionColor
             }
         }
@@ -265,39 +336,8 @@ class CategoryTitleLabel: UILabel {
 
 import AVKit
 
-class QuestionPresentationViewController: UIViewController {
-    
-    @IBOutlet weak var videoView: UIView!
-    
-    private let imageView = UIImageView()
-    private let videoPlayer = AVPlayerViewController()
-    private let questionLabel = UILabel()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-//        configure()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        configure()
-    }
-    
-    private func configure() {
-        
-        
-        
-        let videoURL = URL(string: "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
-        let player = AVPlayer(url: videoURL!)
-        let layer = AVPlayerLayer(player: player)
-        videoView.layer.addSublayer(layer)
-        player.play()
-//        videoPlayer.player = player
-//        self.present(videoPlayer, animated: false) {
-//            self.videoPlayer.player!.play()
-//        }
-    }
-    
+protocol QuestionPresentationEnded: class {
+    func didEnd(points: Int)
 }
 
 class TextQuestionPresentationViewController: UIViewController {
@@ -305,19 +345,23 @@ class TextQuestionPresentationViewController: UIViewController {
     private let textLabel = UILabel()
     private let timerLabel = UILabel()
     private var timer: Timer!
+    
+    weak var delegate: QuestionPresentationEnded!
+    var points: Int!
 
     var text: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var countdown = 15
+        var countdown = 5
         self.timerLabel.text = "\(countdown)"
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
             countdown -= 1
             self?.timerLabel.text = "\(countdown)"
             if countdown == 0 {
                 self?.navigationController?.dismiss(animated: true, completion: nil)
+                self?.delegate.didEnd(points: (self?.points)!)
             }
         })
         
@@ -365,6 +409,9 @@ class MediaQuestionPresentationViewController: UIViewController {
     private let timerLabel = UILabel()
     private var timer: Timer!
     
+    weak var delegate: QuestionPresentationEnded!
+    var points: Int!
+    
     var videoURL: String?
     var image: UIImage?
     var text: String!
@@ -375,13 +422,14 @@ class MediaQuestionPresentationViewController: UIViewController {
             assert(videoURL != nil)
         }
         
-        var countdown = 10
+        var countdown = 5
         self.timerLabel.text = "\(countdown)"
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
             countdown -= 1
             self?.timerLabel.text = "\(countdown)"
             if countdown == 0 {
                 self?.navigationController?.dismiss(animated: true, completion: nil)
+                self?.delegate.didEnd(points: (self?.points)!)
             }
         })
 

@@ -55,7 +55,7 @@ class Questions {
     static let question24 = JeopardyQuestion(x: 3, y: 5, question: "After destroying Starkiller base and being pursued relentlessly by the First Order, the Resistance prepared to make a last stand on the planet of Crait, which is covered in a layer of this substance.", image: nil, videoURL: nil)
     
     // fifth cat - THERE IS NO TRY
-    static let cat5Title = "THERE IS NO TRYW"
+    static let cat5Title = "THERE IS NO TRY"
     static let question25 = JeopardyQuestion(x: 4, y: 0, question: "Prior to his discovery that his father was a Jedi Knight, Luke thought his father's occupation was this.", image: nil, videoURL: nil)
     static let question26 = JeopardyQuestion(x: 4, y: 1, question: "The age that Yoda was when he became one with the force.", image: nil, videoURL: nil)
     static let question27 = JeopardyQuestion(x: 4, y: 2, question: "It's the name of the planet where the Empire had their final battle, as well as where we first meet a certain highly force-sensitive scavenger", image: nil, videoURL: nil)

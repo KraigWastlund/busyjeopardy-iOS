@@ -37,10 +37,10 @@ class ScoreBoardView: UIView {
         
         let views = [ "one": team1View, "two": team2View, "three": team3View, "four": team4View ]
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[one]-[two]-[three]-[four]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[one]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[two]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[three]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[four]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[one]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[two]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[three]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[four]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         
         addConstraint(NSLayoutConstraint(item: team1View, attribute: .width, relatedBy: .equal, toItem: team2View, attribute: .width, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: team2View, attribute: .width, relatedBy: .equal, toItem: team3View, attribute: .width, multiplier: 1.0, constant: 0.0))
@@ -64,7 +64,8 @@ class TeamScoreView: UIView {
     
     private let nameLabel = UILabel()
     private let pointsLabel = UILabel()
-    private let touchButton = UIButton()
+    private let nameButton = UIButton()
+    private let pointsButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -79,13 +80,16 @@ class TeamScoreView: UIView {
     private func configureSubviews() {
         backgroundColor = .lightGray
         
-        touchButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        nameButton.addTarget(self, action: #selector(nameButtonPressed), for: .touchUpInside)
+        pointsButton.addTarget(self, action: #selector(pointsButtonPressed), for: .touchUpInside)
         
         pointsLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        touchButton.translatesAutoresizingMaskIntoConstraints = false
+        nameButton.translatesAutoresizingMaskIntoConstraints = false
+        pointsButton.translatesAutoresizingMaskIntoConstraints = false
         
-        touchButton.backgroundColor = .clear
+        nameButton.backgroundColor = .clear
+        pointsButton.backgroundColor = .clear
         
         pointsLabel.textAlignment = .center
         pointsLabel.font = UIFont.systemFont(ofSize: 100, weight: .medium)
@@ -95,34 +99,61 @@ class TeamScoreView: UIView {
         
         addSubview(nameLabel)
         addSubview(pointsLabel)
-        addSubview(touchButton)
+        addSubview(nameButton)
+        addSubview(pointsButton)
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[name]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["name": nameLabel, "points": pointsLabel]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[points]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["name": nameLabel, "points": pointsLabel]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[name(50)][points]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["name": nameLabel, "points": pointsLabel]))
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[touch]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["touch": touchButton]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[touch]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["touch": touchButton]))
+        addConstraint(NSLayoutConstraint(item: nameButton, attribute: .width, relatedBy: .equal, toItem: nameLabel, attribute: .width, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: nameButton, attribute: .height, relatedBy: .equal, toItem: nameLabel, attribute: .height, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: nameButton, attribute: .centerY, relatedBy: .equal, toItem: nameLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: nameButton, attribute: .centerX, relatedBy: .equal, toItem: nameLabel, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         
-        bringSubview(toFront: touchButton)
+        addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .width, relatedBy: .equal, toItem: pointsLabel, attribute: .width, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .height, relatedBy: .equal, toItem: pointsLabel, attribute: .height, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .centerY, relatedBy: .equal, toItem: pointsLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .centerX, relatedBy: .equal, toItem: pointsLabel, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+        
+        bringSubview(toFront: nameButton)
+        bringSubview(toFront: pointsButton)
         
         nameLabel.text = "Team Name"
         pointsLabel.text = "0"
     }
     
-    @objc private func buttonPressed() {
-        let alert = UIAlertController(title: "Great Title", message: "Please input something", preferredStyle: UIAlertControllerStyle.alert)
+    @objc private func nameButtonPressed() {
+        let alert = UIAlertController(title: "Name Your Team!", message: "Input the name of the team below", preferredStyle: UIAlertControllerStyle.alert)
         alert.addTextField { (textField) in
             textField.placeholder = "Enter your name"
         }
         let action = UIAlertAction(title: "Name Input", style: .default) { [weak self] (alertAction) in
             if let tfs = alert.textFields, !tfs.isEmpty {
-                if let text = tfs[0].text {
+                if let text = tfs[0].text, text.count > 0 {
                     self?.nameLabel.text = text
                 }
             }
         }
         alert.addAction(action)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.nc.present(alert, animated:true, completion: nil)
+    }
+    
+    @objc private func pointsButtonPressed() {
+        let alert = UIAlertController(title: "Modify Points?", message: "Use this to manually modify points", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = "Enter your points"
+        }
+        let action = UIAlertAction(title: "Points Input", style: .default) { [weak self] (alertAction) in
+            if let tfs = alert.textFields, !tfs.isEmpty {
+                if let text = tfs[0].text, text.count > 0 {
+                    self?.pointsLabel.text = text
+                }
+            }
+        }
+        alert.addAction(action)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.nc.present(alert, animated:true, completion: nil)
     }
 }
