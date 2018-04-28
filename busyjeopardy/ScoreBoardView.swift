@@ -78,7 +78,7 @@ class TeamScoreView: UIView {
     }
     
     private func configureSubviews() {
-        backgroundColor = .lightGray
+        backgroundColor = BSYColor.c14
         
         nameButton.addTarget(self, action: #selector(nameButtonPressed), for: .touchUpInside)
         pointsButton.addTarget(self, action: #selector(pointsButtonPressed), for: .touchUpInside)

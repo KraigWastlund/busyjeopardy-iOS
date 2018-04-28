@@ -108,6 +108,12 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
+        
+        if cell.userDidSelect == true {
+            return
+        }
+        
         var category: String!
         var points: String!
         if indexPath.row < 6 {
@@ -132,7 +138,6 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         let msg = "Category: \(category!) \n Points: \(points!)"
         let alert = UIAlertController(title: "You sure?", message: msg, preferredStyle: .alert)
         let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
-            let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
             cell.userDidSelect = true
         }
         alert.addAction(action)
@@ -219,7 +224,7 @@ protocol JeopardyCollectionCellSelectionDelegate: class {
 class JeopardyCollectionCell: UICollectionViewCell {
     
     private let label = UILabel()
-    private let selectionColor: UIColor = .yellow
+    private let selectionColor: UIColor = BSYColor.c8
     
     var x: Int!
     var y: Int!
@@ -249,7 +254,7 @@ class JeopardyCollectionCell: UICollectionViewCell {
     
     private func configure() {
         
-        backgroundColor = .lightGray
+        backgroundColor = BSYColor.c14
         
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -328,7 +333,7 @@ class CategoryTitleLabel: UILabel {
     }
     
     private func configure() {
-        backgroundColor = .green
+        backgroundColor = BSYColor.c8
         textAlignment = .center
         font = UIFont.systemFont(ofSize: 20, weight: .light)
     }
@@ -377,7 +382,7 @@ class TextQuestionPresentationViewController: UIViewController {
         
         timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
         timerLabel.textColor = .white
-        timerLabel.backgroundColor = .green
+        timerLabel.backgroundColor = BSYColor.c8
         timerLabel.textAlignment = .center
         
         self.view.addSubview(textLabel)
@@ -447,7 +452,7 @@ class MediaQuestionPresentationViewController: UIViewController {
         
         timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
         timerLabel.textColor = .white
-        timerLabel.backgroundColor = .green
+        timerLabel.backgroundColor = BSYColor.c8
         timerLabel.textAlignment = .center
         
         self.view.addSubview(videoView)
