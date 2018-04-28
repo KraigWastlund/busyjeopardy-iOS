@@ -36,7 +36,7 @@ class ScoreBoardView: UIView {
         addSubview(team4View)
         
         let views = [ "one": team1View, "two": team2View, "three": team3View, "four": team4View ]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[one]-[two]-[three]-[four]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[one]-[two]-[three]-[four]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[one]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[two]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[three]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
@@ -46,6 +46,12 @@ class ScoreBoardView: UIView {
         addConstraint(NSLayoutConstraint(item: team2View, attribute: .width, relatedBy: .equal, toItem: team3View, attribute: .width, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: team3View, attribute: .width, relatedBy: .equal, toItem: team4View, attribute: .width, multiplier: 1.0, constant: 0.0))
     }
+}
+
+enum TeamSelectionState {
+    case selected
+    case unselected
+    case neutral
 }
 
 class TeamScoreView: UIView {
@@ -61,11 +67,15 @@ class TeamScoreView: UIView {
         }
     }
     var nc: UINavigationController!
+    var vc: ViewController!
+    var team: Int!
     
     private let nameLabel = UILabel()
     private let pointsLabel = UILabel()
     private let nameButton = UIButton()
     private let pointsButton = UIButton()
+    
+    private let tempButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -82,25 +92,31 @@ class TeamScoreView: UIView {
         
         nameButton.addTarget(self, action: #selector(nameButtonPressed), for: .touchUpInside)
         pointsButton.addTarget(self, action: #selector(pointsButtonPressed), for: .touchUpInside)
+        tempButton.addTarget(self, action: #selector(tempButtonPressed), for: .touchUpInside)
         
         pointsLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameButton.translatesAutoresizingMaskIntoConstraints = false
         pointsButton.translatesAutoresizingMaskIntoConstraints = false
+        tempButton.translatesAutoresizingMaskIntoConstraints = false
         
         nameButton.backgroundColor = .clear
         pointsButton.backgroundColor = .clear
+        tempButton.backgroundColor = .clear
         
         pointsLabel.textAlignment = .center
+        pointsLabel.textColor = BSYColor.c2
         pointsLabel.font = UIFont.systemFont(ofSize: 100, weight: .medium)
         
         nameLabel.textAlignment = .center
         nameLabel.font = UIFont.systemFont(ofSize: 36, weight: .light)
+        nameLabel.textColor = BSYColor.c2
         
         addSubview(nameLabel)
         addSubview(pointsLabel)
         addSubview(nameButton)
         addSubview(pointsButton)
+        addSubview(tempButton)
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[name]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["name": nameLabel, "points": pointsLabel]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[points]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["name": nameLabel, "points": pointsLabel]))
@@ -116,11 +132,32 @@ class TeamScoreView: UIView {
         addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .centerY, relatedBy: .equal, toItem: pointsLabel, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: pointsButton, attribute: .centerX, relatedBy: .equal, toItem: pointsLabel, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         
+        addConstraint(NSLayoutConstraint(item: tempButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100.0))
+        addConstraint(NSLayoutConstraint(item: tempButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100.0))
+        addConstraint(NSLayoutConstraint(item: tempButton, attribute: .right, relatedBy: .equal, toItem: nameLabel, attribute: .right, multiplier: 1.0, constant: 0.0))
+        addConstraint(NSLayoutConstraint(item: tempButton, attribute: .top, relatedBy: .equal, toItem: nameLabel, attribute: .top, multiplier: 1.0, constant: 0.0))
+        
         bringSubview(toFront: nameButton)
         bringSubview(toFront: pointsButton)
+        bringSubview(toFront: tempButton)
         
         nameLabel.text = "Team Name"
-        pointsLabel.text = "0"
+        points = "0"
+    }
+    
+    func setSelectionState(state: TeamSelectionState) {
+        switch state {
+        case .neutral:
+            self.backgroundColor = BSYColor.c14
+        case .selected:
+            self.backgroundColor = .green
+        case .unselected:
+            self.backgroundColor = .red
+        }
+    }
+    
+    @objc private func tempButtonPressed() {
+        vc.currentTeamSelection(team: self.team)
     }
     
     @objc private func nameButtonPressed() {

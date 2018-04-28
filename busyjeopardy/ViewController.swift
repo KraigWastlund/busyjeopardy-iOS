@@ -14,31 +14,79 @@ class ViewController: UIViewController {
     let categoryTitlesView = CategoryTitlesView()
     var jeopardyCollectionView: UICollectionView!
     
-    var currentTeam: Int = 0
+    var currentPointValueIndex: Int!
+    
+    var tempTimer: Timer!
+    
+    var currentTeam: Int = 0 {
+        didSet {
+            scoreBoard.team1View.setSelectionState(state: .unselected)
+            scoreBoard.team2View.setSelectionState(state: .unselected)
+            scoreBoard.team3View.setSelectionState(state: .unselected)
+            scoreBoard.team4View.setSelectionState(state: .unselected)
+            switch currentTeam {
+            case 0:
+                scoreBoard.team1View.setSelectionState(state: .selected)
+            case 1:
+                scoreBoard.team2View.setSelectionState(state: .selected)
+            case 2:
+                scoreBoard.team3View.setSelectionState(state: .selected)
+            case 3:
+                scoreBoard.team4View.setSelectionState(state: .selected)
+            default:
+                assert(false)
+            }
+            
+            self.navigationController!.dismiss(animated: true, completion: {
+                self.didEnd(pointIndex: self.currentPointValueIndex)
+            })
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = BSYColor.c2
         jeopardyCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
         jeopardyCollectionView.delegate = self
         jeopardyCollectionView.dataSource = self
         
         scoreBoard.team1View.nc = navigationController
+        scoreBoard.team1View.vc = self
+        scoreBoard.team1View.team = 0
         scoreBoard.team2View.nc = navigationController
+        scoreBoard.team2View.vc = self
+        scoreBoard.team2View.team = 1
         scoreBoard.team3View.nc = navigationController
+        scoreBoard.team3View.vc = self
+        scoreBoard.team3View.team = 2
         scoreBoard.team4View.nc = navigationController
+        scoreBoard.team4View.vc = self
+        scoreBoard.team4View.team = 3
         
         jeopardyCollectionView.register(JeopardyCollectionCell.self, forCellWithReuseIdentifier: "cell")
         // Do any additional setup after loading the view, typically from a nib.
         configureSubviews()
     }
     
+    func currentTeamSelection(team: Int) {
+        self.currentTeam = team
+    }
+    
+    @objc private func tempSetCurrentTeam() {
+        // random number between 0 and 3 inclusive
+        let ran = Int(arc4random_uniform(4))
+        self.currentTeam = ran
+        self.tempTimer.invalidate()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: ((self.jeopardyCollectionView.frame.size.width - 10) / 6), height: ((self.jeopardyCollectionView.frame.size.height - 10) / 6))
+        layout.itemSize = CGSize(width: ((self.jeopardyCollectionView.frame.size.width - 10) / 6), height: ((self.jeopardyCollectionView.frame.size.height - 28) / 6))
         layout.minimumLineSpacing = 2
         layout.minimumInteritemSpacing = 2
         self.jeopardyCollectionView.collectionViewLayout = layout
+        self.jeopardyCollectionView.backgroundColor = BSYColor.c2
     }
 
     private func configureSubviews() {
@@ -52,10 +100,10 @@ class ViewController: UIViewController {
         self.view.addSubview(jeopardyCollectionView)
         
         let views = [ "score": self.scoreBoard, "cat": categoryTitlesView, "coll": jeopardyCollectionView ] as [String : Any]
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[score]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[cat]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[coll]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[score(200)][cat(100)][coll]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[score]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[cat]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[coll]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[score(200)][cat(50)][coll]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         
         categoryTitlesView.titleLabel1.text = Questions.cat1Title
         categoryTitlesView.titleLabel2.text = Questions.cat2Title
@@ -153,35 +201,48 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
         let (question, image, url) = Questions.getQuestionAndOptionalImageAndVideoURL(forX: x, forY: y)
         print(question)
         
+        self.currentPointValueIndex = y
+        self.tempTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
+        
         if image != nil || url != nil {
             let vc = MediaQuestionPresentationViewController()
-            vc.delegate = self
+//            vc.delegate = self
             vc.text = question
             vc.points = y
             vc.image = image
             vc.videoURL = url
             let nc = UINavigationController(rootViewController: vc)
             nc.isNavigationBarHidden = true
-            self.present(nc, animated: true, completion: nil)
+            self.present(nc, animated: true, completion: { [weak self] in
+                self?.scoreBoard.team1View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team2View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team3View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team4View.setSelectionState(state: .neutral)
+            })
         } else {
             let vc = TextQuestionPresentationViewController()
-            vc.delegate = self
+//            vc.delegate = self
             vc.points = y
             vc.text = question
             let nc = UINavigationController(rootViewController: vc)
             nc.isNavigationBarHidden = true
-            self.present(nc, animated: true, completion: nil)
+            self.present(nc, animated: true, completion: { [weak self] in
+                self?.scoreBoard.team1View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team2View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team3View.setSelectionState(state: .neutral)
+                self?.scoreBoard.team4View.setSelectionState(state: .neutral)
+            })
         }
     }
 }
 
-extension ViewController: QuestionPresentationEnded {
-    func didEnd(points: Int) {
+extension ViewController {
+    func didEnd(pointIndex: Int) {
         
         let alert = UIAlertController(title: "Correct?", message: "Did they get it right?", preferredStyle: .alert)
         let action = UIAlertAction(title: "YES", style: .default) { [weak self] (alert: UIAlertAction) in
             var p: Int = 0
-            switch points {
+            switch pointIndex {
             case 0:
                 p = 100
             case 1:
@@ -200,13 +261,17 @@ extension ViewController: QuestionPresentationEnded {
             
             switch self?.currentTeam {
             case 0:
-                self?.scoreBoard.team1View.points = "\(p)"
+                let currentPoints = Int((self?.scoreBoard.team1View.points)!)
+                self?.scoreBoard.team1View.points = "\(p + currentPoints!)"
             case 1:
-                self?.scoreBoard.team2View.points = "\(p)"
+                let currentPoints = Int((self?.scoreBoard.team2View.points)!)
+                self?.scoreBoard.team2View.points = "\(p + currentPoints!)"
             case 2:
-                self?.scoreBoard.team3View.points = "\(p)"
+                let currentPoints = Int((self?.scoreBoard.team3View.points)!)
+                self?.scoreBoard.team3View.points = "\(p + currentPoints!)"
             case 3:
-                self?.scoreBoard.team4View.points = "\(p)"
+                let currentPoints = Int((self?.scoreBoard.team4View.points)!)
+                self?.scoreBoard.team4View.points = "\(p + currentPoints!)"
             default:
                 assert(false)
             }
@@ -258,6 +323,7 @@ class JeopardyCollectionCell: UICollectionViewCell {
         
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
+        label.textColor = BSYColor.c2
         label.font = UIFont.systemFont(ofSize: 40, weight: .bold)
         contentView.addSubview(label)
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[label]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: ["label": label]))
@@ -291,16 +357,22 @@ class CategoryTitlesView: UIView {
     private func configureSubviews() {
         
         titleLabel1.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel1.textColor = BSYColor.c14
         addSubview(titleLabel1)
         titleLabel2.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel2.textColor = BSYColor.c14
         addSubview(titleLabel2)
         titleLabel3.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel3.textColor = BSYColor.c14
         addSubview(titleLabel3)
         titleLabel4.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel4.textColor = BSYColor.c14
         addSubview(titleLabel4)
         titleLabel5.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel5.textColor = BSYColor.c14
         addSubview(titleLabel5)
         titleLabel6.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel6.textColor = BSYColor.c14
         addSubview(titleLabel6)
 
         let views = [ "one": titleLabel1, "two": titleLabel2, "three": titleLabel3, "four": titleLabel4, "five": titleLabel5, "six": titleLabel6 ]
@@ -333,25 +405,25 @@ class CategoryTitleLabel: UILabel {
     }
     
     private func configure() {
-        backgroundColor = BSYColor.c8
         textAlignment = .center
+        textColor = .white
         font = UIFont.systemFont(ofSize: 20, weight: .light)
     }
 }
 
 import AVKit
 
-protocol QuestionPresentationEnded: class {
-    func didEnd(points: Int)
-}
+//protocol QuestionPresentationEnded: class {
+//    func didEnd(points: Int)
+//}
 
 class TextQuestionPresentationViewController: UIViewController {
     
     private let textLabel = UILabel()
-    private let timerLabel = UILabel()
-    private var timer: Timer!
+//    private let timerLabel = UILabel()
+//    private var timer: Timer!
     
-    weak var delegate: QuestionPresentationEnded!
+//    weak var delegate: QuestionPresentationEnded!
     var points: Int!
 
     var text: String!
@@ -359,46 +431,46 @@ class TextQuestionPresentationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var countdown = 5
-        self.timerLabel.text = "\(countdown)"
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
-            countdown -= 1
-            self?.timerLabel.text = "\(countdown)"
-            if countdown == 0 {
-                self?.navigationController?.dismiss(animated: true, completion: nil)
-                self?.delegate.didEnd(points: (self?.points)!)
-            }
-        })
+//        var countdown = 5
+//        self.timerLabel.text = "\(countdown)"
+//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
+//            countdown -= 1
+//            self?.timerLabel.text = "\(countdown)"
+//            if countdown == 0 {
+//                self?.navigationController?.dismiss(animated: true, completion: nil)
+////                self?.delegate.didEnd(points: (self?.points)!)
+//            }
+//        })
         
         self.view.backgroundColor = .white
         
         textLabel.translatesAutoresizingMaskIntoConstraints = false
-        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+//        timerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         textLabel.lineBreakMode = .byWordWrapping
         textLabel.font = UIFont.systemFont(ofSize: 72, weight: .light)
         
-        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
-        timerLabel.textColor = .white
-        timerLabel.backgroundColor = BSYColor.c8
-        timerLabel.textAlignment = .center
+//        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
+//        timerLabel.textColor = .white
+//        timerLabel.backgroundColor = BSYColor.c8
+//        timerLabel.textAlignment = .center
         
         self.view.addSubview(textLabel)
-        self.view.addSubview(timerLabel)
+//        self.view.addSubview(timerLabel)
         
         let views = [ "text": textLabel ]
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[text]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[text]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         
         
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1.0, constant: 0.0))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1.0, constant: 0.0))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1.0, constant: 0.0))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1.0, constant: 0.0))
         
-        self.view.bringSubview(toFront: timerLabel)
+//        self.view.bringSubview(toFront: timerLabel)
         
         textLabel.text = self.text
     }
@@ -411,10 +483,10 @@ class MediaQuestionPresentationViewController: UIViewController {
     private let videoView = UIView()
     private let textLabel = UILabel()
     private let imageView = UIImageView()
-    private let timerLabel = UILabel()
-    private var timer: Timer!
+//    private let timerLabel = UILabel()
+//    private var timer: Timer!
     
-    weak var delegate: QuestionPresentationEnded!
+//    weak var delegate: QuestionPresentationEnded!
     var points: Int!
     
     var videoURL: String?
@@ -427,38 +499,38 @@ class MediaQuestionPresentationViewController: UIViewController {
             assert(videoURL != nil)
         }
         
-        var countdown = 5
-        self.timerLabel.text = "\(countdown)"
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
-            countdown -= 1
-            self?.timerLabel.text = "\(countdown)"
-            if countdown == 0 {
-                self?.navigationController?.dismiss(animated: true, completion: nil)
-                self?.delegate.didEnd(points: (self?.points)!)
-            }
-        })
+//        var countdown = 5
+//        self.timerLabel.text = "\(countdown)"
+//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
+//            countdown -= 1
+//            self?.timerLabel.text = "\(countdown)"
+//            if countdown == 0 {
+//                self?.navigationController?.dismiss(animated: true, completion: nil)
+////                self?.delegate.didEnd(points: (self?.points)!)
+//            }
+//        })
 
         self.view.backgroundColor = .white
         
         videoView.translatesAutoresizingMaskIntoConstraints = false
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+//        timerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         textLabel.lineBreakMode = .byWordWrapping
         textLabel.font = UIFont.systemFont(ofSize: 36, weight: .light)
         
-        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
-        timerLabel.textColor = .white
-        timerLabel.backgroundColor = BSYColor.c8
-        timerLabel.textAlignment = .center
+//        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
+//        timerLabel.textColor = .white
+//        timerLabel.backgroundColor = BSYColor.c8
+//        timerLabel.textAlignment = .center
         
         self.view.addSubview(videoView)
         self.view.addSubview(textLabel)
         self.view.addSubview(imageView)
-        self.view.addSubview(timerLabel)
+//        self.view.addSubview(timerLabel)
         
         let views = [ "video": videoView, "text": textLabel ]
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[video]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
@@ -470,12 +542,12 @@ class MediaQuestionPresentationViewController: UIViewController {
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: videoView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: videoView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: videoView, attribute: .right, multiplier: 1.0, constant: 0.0))
-        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: videoView, attribute: .top, multiplier: 1.0, constant: 0.0))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: videoView, attribute: .right, multiplier: 1.0, constant: 0.0))
+//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: videoView, attribute: .top, multiplier: 1.0, constant: 0.0))
         
-        self.view.bringSubview(toFront: timerLabel)
+//        self.view.bringSubview(toFront: timerLabel)
         
         textLabel.text = self.text
         
