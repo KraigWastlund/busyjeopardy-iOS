@@ -20,6 +20,11 @@ class ViewController: UIViewController {
         jeopardyCollectionView.delegate = self
         jeopardyCollectionView.dataSource = self
         
+        scoreBoard.team1View.nc = navigationController
+        scoreBoard.team2View.nc = navigationController
+        scoreBoard.team3View.nc = navigationController
+        scoreBoard.team4View.nc = navigationController
+        
         jeopardyCollectionView.register(JeopardyCollectionCell.self, forCellWithReuseIdentifier: "cell")
         // Do any additional setup after loading the view, typically from a nib.
         configureSubviews()
@@ -49,6 +54,13 @@ class ViewController: UIViewController {
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[cat]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[coll]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[score(200)][cat(100)][coll]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        
+        categoryTitlesView.titleLabel1.text = Questions.cat1Title
+        categoryTitlesView.titleLabel2.text = Questions.cat2Title
+        categoryTitlesView.titleLabel3.text = Questions.cat3Title
+        categoryTitlesView.titleLabel4.text = Questions.cat4Title
+        categoryTitlesView.titleLabel5.text = Questions.cat5Title
+        categoryTitlesView.titleLabel6.text = Questions.cat6Title
     }
 }
 
@@ -110,10 +122,22 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
         print("x: \(x) y: \(y)")
         let (question, image, url) = Questions.getQuestionAndOptionalImageAndVideoURL(forX: x, forY: y)
         print(question)
-        let vc = TestViewController()
-        let nc = UINavigationController(rootViewController: vc)
-        nc.isNavigationBarHidden = true
-        self.present(nc, animated: true, completion: nil)
+        
+        if image != nil || url != nil {
+            let vc = MediaQuestionPresentationViewController()
+            vc.text = question
+            vc.image = image
+            vc.videoURL = url
+            let nc = UINavigationController(rootViewController: vc)
+            nc.isNavigationBarHidden = true
+            self.present(nc, animated: true, completion: nil)
+        } else {
+            let vc = TextQuestionPresentationViewController()
+            vc.text = question
+            let nc = UINavigationController(rootViewController: vc)
+            nc.isNavigationBarHidden = true
+            self.present(nc, animated: true, completion: nil)
+        }
     }
 }
 
@@ -191,22 +215,16 @@ class CategoryTitlesView: UIView {
     private func configureSubviews() {
         
         titleLabel1.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel1.text = "Category 1"
         addSubview(titleLabel1)
         titleLabel2.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel2.text = "Category 2"
         addSubview(titleLabel2)
         titleLabel3.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel3.text = "Category 3"
         addSubview(titleLabel3)
         titleLabel4.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel4.text = "Category 4"
         addSubview(titleLabel4)
         titleLabel5.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel5.text = "Category 5"
         addSubview(titleLabel5)
         titleLabel6.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel6.text = "Category 6"
         addSubview(titleLabel6)
 
         let views = [ "one": titleLabel1, "two": titleLabel2, "three": titleLabel3, "four": titleLabel4, "five": titleLabel5, "six": titleLabel6 ]
@@ -282,43 +300,145 @@ class QuestionPresentationViewController: UIViewController {
     
 }
 
-class TestViewController: UIViewController {
+class TextQuestionPresentationViewController: UIViewController {
     
-    let smallVideoPlayerViewController = AVPlayerViewController()
-    
-    var videoView = UIView()
-    var textView = UILabel()
+    private let textLabel = UILabel()
+    private let timerLabel = UILabel()
+    private var timer: Timer!
+
+    var text: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        videoView.translatesAutoresizingMaskIntoConstraints = false
-        textView.translatesAutoresizingMaskIntoConstraints = false
+        var countdown = 15
+        self.timerLabel.text = "\(countdown)"
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
+            countdown -= 1
+            self?.timerLabel.text = "\(countdown)"
+            if countdown == 0 {
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        })
         
-        textView.backgroundColor = .white
-        textView.textAlignment = .center
-        textView.numberOfLines = 0
-        textView.lineBreakMode = .byWordWrapping
-        textView.font = UIFont.systemFont(ofSize: 36, weight: .light)
+        self.view.backgroundColor = .white
+        
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        textLabel.textAlignment = .center
+        textLabel.numberOfLines = 0
+        textLabel.lineBreakMode = .byWordWrapping
+        textLabel.font = UIFont.systemFont(ofSize: 72, weight: .light)
+        
+        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
+        timerLabel.textColor = .white
+        timerLabel.backgroundColor = .green
+        timerLabel.textAlignment = .center
+        
+        self.view.addSubview(textLabel)
+        self.view.addSubview(timerLabel)
+        
+        let views = [ "text": textLabel ]
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[text]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[text]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        
+        
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1.0, constant: 0.0))
+        
+        self.view.bringSubview(toFront: timerLabel)
+        
+        textLabel.text = self.text
+    }
+}
+
+class MediaQuestionPresentationViewController: UIViewController {
+    
+    private let smallVideoPlayerViewController = AVPlayerViewController()
+    
+    private let videoView = UIView()
+    private let textLabel = UILabel()
+    private let imageView = UIImageView()
+    private let timerLabel = UILabel()
+    private var timer: Timer!
+    
+    var videoURL: String?
+    var image: UIImage?
+    var text: String!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if image == nil {
+            assert(videoURL != nil)
+        }
+        
+        var countdown = 10
+        self.timerLabel.text = "\(countdown)"
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
+            countdown -= 1
+            self?.timerLabel.text = "\(countdown)"
+            if countdown == 0 {
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        })
+
+        self.view.backgroundColor = .white
+        
+        videoView.translatesAutoresizingMaskIntoConstraints = false
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        timerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        textLabel.textAlignment = .center
+        textLabel.numberOfLines = 0
+        textLabel.lineBreakMode = .byWordWrapping
+        textLabel.font = UIFont.systemFont(ofSize: 36, weight: .light)
+        
+        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
+        timerLabel.textColor = .white
+        timerLabel.backgroundColor = .green
+        timerLabel.textAlignment = .center
         
         self.view.addSubview(videoView)
-        self.view.addSubview(textView)
+        self.view.addSubview(textLabel)
+        self.view.addSubview(imageView)
+        self.view.addSubview(timerLabel)
         
-        let views = [ "video": videoView, "text": textView ]
+        let views = [ "video": videoView, "text": textLabel ]
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[video]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[text]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[video][text(200)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[text]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[video][text(255)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         
-        textView.text = "After destroying Starkiller base and being pursued relentlessly by the First Order, the Resistance prepared to make a last stand on the planet of Crait, which is covered in a layer of this substance."
+        self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: videoView, attribute: .width, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: videoView, attribute: .height, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: videoView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: videoView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         
-        let videoUrl = URL(string: "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")!
-        smallVideoPlayerViewController.showsPlaybackControls = false
-        smallVideoPlayerViewController.player = AVPlayer(url: videoUrl)
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: videoView, attribute: .right, multiplier: 1.0, constant: 0.0))
+        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: videoView, attribute: .top, multiplier: 1.0, constant: 0.0))
         
-        videoView.addSubview(smallVideoPlayerViewController.view)
+        self.view.bringSubview(toFront: timerLabel)
         
-        smallVideoPlayerViewController.view.frame = videoView.bounds
+        textLabel.text = self.text
         
-        smallVideoPlayerViewController.player?.play()
+        if let url = videoURL {
+            imageView.isHidden = true
+            smallVideoPlayerViewController.showsPlaybackControls = false
+            smallVideoPlayerViewController.player = AVPlayer(url: URL(fileURLWithPath: url))
+            
+            videoView.addSubview(smallVideoPlayerViewController.view)
+            
+            smallVideoPlayerViewController.view.frame = videoView.bounds
+            
+            smallVideoPlayerViewController.player?.play()
+        } else {
+            videoView.isHidden = true
+            imageView.image = self.image!
+        }
     }
 }

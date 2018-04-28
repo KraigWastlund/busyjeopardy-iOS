@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		06206607EDB6BDE03DEB9347 /* Pods_busyjeopardy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A451A6DF8D2B28191AC3316F /* Pods_busyjeopardy.framework */; };
 		648319A72093C91C001A2855 /* JeopardyQuestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648319A62093C91C001A2855 /* JeopardyQuestions.swift */; };
+		648319AD2094BE0B001A2855 /* falcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319AC2094BE0B001A2855 /* falcon.jpg */; };
+		648319B32094C004001A2855 /* atat.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319AE2094C003001A2855 /* atat.jpg */; };
+		648319B42094C004001A2855 /* tie.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319AF2094C003001A2855 /* tie.jpg */; };
+		648319B52094C004001A2855 /* xwing.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319B02094C003001A2855 /* xwing.jpg */; };
+		648319B62094C004001A2855 /* atst.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319B12094C003001A2855 /* atst.jpg */; };
+		648319B72094C004001A2855 /* landspeeder.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 648319B22094C004001A2855 /* landspeeder.jpg */; };
 		649738FE20937FA300B297B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649738FD20937FA300B297B1 /* AppDelegate.swift */; };
 		6497390020937FA300B297B1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649738FF20937FA300B297B1 /* ViewController.swift */; };
 		6497390320937FA300B297B1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6497390120937FA300B297B1 /* Main.storyboard */; };
@@ -21,6 +27,12 @@
 /* Begin PBXFileReference section */
 		0E760C4692EB82B1D0BB4C7E /* Pods-busyjeopardy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-busyjeopardy.release.xcconfig"; path = "Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy.release.xcconfig"; sourceTree = "<group>"; };
 		648319A62093C91C001A2855 /* JeopardyQuestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JeopardyQuestions.swift; sourceTree = "<group>"; };
+		648319AC2094BE0B001A2855 /* falcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = falcon.jpg; sourceTree = "<group>"; };
+		648319AE2094C003001A2855 /* atat.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = atat.jpg; sourceTree = "<group>"; };
+		648319AF2094C003001A2855 /* tie.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tie.jpg; sourceTree = "<group>"; };
+		648319B02094C003001A2855 /* xwing.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = xwing.jpg; sourceTree = "<group>"; };
+		648319B12094C003001A2855 /* atst.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = atst.jpg; sourceTree = "<group>"; };
+		648319B22094C004001A2855 /* landspeeder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landspeeder.jpg; sourceTree = "<group>"; };
 		649738FA20937FA300B297B1 /* busyjeopardy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = busyjeopardy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		649738FD20937FA300B297B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		649738FF20937FA300B297B1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -55,6 +67,19 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		648319AB2094BE0B001A2855 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				648319AE2094C003001A2855 /* atat.jpg */,
+				648319B12094C003001A2855 /* atst.jpg */,
+				648319B22094C004001A2855 /* landspeeder.jpg */,
+				648319AF2094C003001A2855 /* tie.jpg */,
+				648319B02094C003001A2855 /* xwing.jpg */,
+				648319AC2094BE0B001A2855 /* falcon.jpg */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		649738F120937FA200B297B1 = {
 			isa = PBXGroup;
 			children = (
@@ -76,6 +101,7 @@
 		649738FC20937FA300B297B1 /* busyjeopardy */ = {
 			isa = PBXGroup;
 			children = (
+				648319AB2094BE0B001A2855 /* Images */,
 				649738FD20937FA300B297B1 /* AppDelegate.swift */,
 				649738FF20937FA300B297B1 /* ViewController.swift */,
 				648319A62093C91C001A2855 /* JeopardyQuestions.swift */,
@@ -158,9 +184,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				648319B42094C004001A2855 /* tie.jpg in Resources */,
+				648319B72094C004001A2855 /* landspeeder.jpg in Resources */,
+				648319AD2094BE0B001A2855 /* falcon.jpg in Resources */,
+				648319B32094C004001A2855 /* atat.jpg in Resources */,
+				648319B62094C004001A2855 /* atst.jpg in Resources */,
 				6497390B20937FA400B297B1 /* LaunchScreen.storyboard in Resources */,
 				6497390820937FA400B297B1 /* Assets.xcassets in Resources */,
 				6497390320937FA300B297B1 /* Main.storyboard in Resources */,
+				648319B52094C004001A2855 /* xwing.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
