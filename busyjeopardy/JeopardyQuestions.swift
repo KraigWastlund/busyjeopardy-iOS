@@ -47,12 +47,12 @@ class Questions {
     
     // fourth cat - ON THE SCREEN
     static let cat4Title = "ON THE SCREEN"
-    static let question19 = JeopardyQuestion(x: 3, y: 0, question: "The next words to be spoken...", image: nil, videoName: "1")
-    static let question20 = JeopardyQuestion(x: 3, y: 1, question: "????", image: nil, videoName: nil)
-    static let question21 = JeopardyQuestion(x: 3, y: 2, question: "????", image: nil, videoName: nil)
-    static let question22 = JeopardyQuestion(x: 3, y: 3, question: "????", image: nil, videoName: nil)
-    static let question23 = JeopardyQuestion(x: 3, y: 4, question: "????", image: nil, videoName: nil)
-    static let question24 = JeopardyQuestion(x: 3, y: 5, question: "????", image: nil, videoName: nil)
+    static let question19 = JeopardyQuestion(x: 3, y: 0, question: "The next words that Yoda says.", image: nil, videoName: "6")
+    static let question20 = JeopardyQuestion(x: 3, y: 1, question: "The names of the three characters on screen.", image: nil, videoName: "2")
+    static let question21 = JeopardyQuestion(x: 3, y: 2, question: "What the bartender says next.", image: nil, videoName: "4")
+    static let question22 = JeopardyQuestion(x: 3, y: 3, question: "The opening scene to this Star Wars movie.", image: nil, videoName: "3")
+    static let question23 = JeopardyQuestion(x: 3, y: 4, question: "The next words to be spoken.", image: nil, videoName: "1")
+    static let question24 = JeopardyQuestion(x: 3, y: 5, question: "The name of this actor.", image: nil, videoName: "5")
     
     // fifth cat - THERE IS NO TRY
     static let cat5Title = "THERE IS NO TRY"

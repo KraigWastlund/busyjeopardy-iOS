@@ -214,7 +214,7 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
         self.currentPointValueIndex = y
         
         // simulate someone clicking the buzzer
-        self.tempTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
+        self.tempTimer = Timer.scheduledTimer(timeInterval: 45, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
         
         if image != nil || url != nil {
             let vc = MediaQuestionPresentationViewController()
