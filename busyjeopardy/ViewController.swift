@@ -18,7 +18,11 @@ class ViewController: UIViewController {
     
     var tempTimer: Timer!
     
+    var previousTeam: Int?
     var currentTeam: Int = 0 {
+        willSet {
+            previousTeam = currentTeam
+        }
         didSet {
             scoreBoard.team1View.setSelectionState(state: .unselected)
             scoreBoard.team2View.setSelectionState(state: .unselected)
@@ -277,7 +281,26 @@ extension ViewController {
             }
         }
         alert.addAction(action)
-        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: { [weak self] (action: UIAlertAction) in
+            if let previous = self?.previousTeam {
+                self?.scoreBoard.team1View.setSelectionState(state: .unselected)
+                self?.scoreBoard.team2View.setSelectionState(state: .unselected)
+                self?.scoreBoard.team3View.setSelectionState(state: .unselected)
+                self?.scoreBoard.team4View.setSelectionState(state: .unselected)
+                switch previous {
+                case 0:
+                    self?.scoreBoard.team1View.setSelectionState(state: .selected)
+                case 1:
+                    self?.scoreBoard.team2View.setSelectionState(state: .selected)
+                case 2:
+                    self?.scoreBoard.team3View.setSelectionState(state: .selected)
+                case 3:
+                    self?.scoreBoard.team4View.setSelectionState(state: .selected)
+                default:
+                    assert(false)
+                }
+            }
+        }))
         self.present(alert, animated:true, completion: nil)
     }
 }
@@ -413,17 +436,9 @@ class CategoryTitleLabel: UILabel {
 
 import AVKit
 
-//protocol QuestionPresentationEnded: class {
-//    func didEnd(points: Int)
-//}
-
 class TextQuestionPresentationViewController: UIViewController {
     
     private let textLabel = UILabel()
-//    private let timerLabel = UILabel()
-//    private var timer: Timer!
-    
-//    weak var delegate: QuestionPresentationEnded!
     var points: Int!
 
     var text: String!
@@ -431,46 +446,20 @@ class TextQuestionPresentationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        var countdown = 5
-//        self.timerLabel.text = "\(countdown)"
-//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
-//            countdown -= 1
-//            self?.timerLabel.text = "\(countdown)"
-//            if countdown == 0 {
-//                self?.navigationController?.dismiss(animated: true, completion: nil)
-////                self?.delegate.didEnd(points: (self?.points)!)
-//            }
-//        })
-        
         self.view.backgroundColor = .white
         
         textLabel.translatesAutoresizingMaskIntoConstraints = false
-//        timerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         textLabel.lineBreakMode = .byWordWrapping
         textLabel.font = UIFont.systemFont(ofSize: 72, weight: .light)
         
-//        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
-//        timerLabel.textColor = .white
-//        timerLabel.backgroundColor = BSYColor.c8
-//        timerLabel.textAlignment = .center
-        
         self.view.addSubview(textLabel)
-//        self.view.addSubview(timerLabel)
         
         let views = [ "text": textLabel ]
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[text]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[text]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        
-        
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: self.view, attribute: .right, multiplier: 1.0, constant: 0.0))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1.0, constant: 0.0))
-        
-//        self.view.bringSubview(toFront: timerLabel)
         
         textLabel.text = self.text
     }
@@ -483,10 +472,6 @@ class MediaQuestionPresentationViewController: UIViewController {
     private let videoView = UIView()
     private let textLabel = UILabel()
     private let imageView = UIImageView()
-//    private let timerLabel = UILabel()
-//    private var timer: Timer!
-    
-//    weak var delegate: QuestionPresentationEnded!
     var points: Int!
     
     var videoURL: String?
@@ -498,39 +483,21 @@ class MediaQuestionPresentationViewController: UIViewController {
         if image == nil {
             assert(videoURL != nil)
         }
-        
-//        var countdown = 5
-//        self.timerLabel.text = "\(countdown)"
-//        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] (timer: Timer) in
-//            countdown -= 1
-//            self?.timerLabel.text = "\(countdown)"
-//            if countdown == 0 {
-//                self?.navigationController?.dismiss(animated: true, completion: nil)
-////                self?.delegate.didEnd(points: (self?.points)!)
-//            }
-//        })
 
         self.view.backgroundColor = .white
         
         videoView.translatesAutoresizingMaskIntoConstraints = false
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
-//        timerLabel.translatesAutoresizingMaskIntoConstraints = false
         
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         textLabel.lineBreakMode = .byWordWrapping
         textLabel.font = UIFont.systemFont(ofSize: 36, weight: .light)
         
-//        timerLabel.font = UIFont.systemFont(ofSize: 36, weight: .medium)
-//        timerLabel.textColor = .white
-//        timerLabel.backgroundColor = BSYColor.c8
-//        timerLabel.textAlignment = .center
-        
         self.view.addSubview(videoView)
         self.view.addSubview(textLabel)
         self.view.addSubview(imageView)
-//        self.view.addSubview(timerLabel)
         
         let views = [ "video": videoView, "text": textLabel ]
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[video]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
@@ -541,13 +508,6 @@ class MediaQuestionPresentationViewController: UIViewController {
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .height, relatedBy: .equal, toItem: videoView, attribute: .height, multiplier: 1.0, constant: 0.0))
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: videoView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: videoView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
-        
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 100))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 100))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .right, relatedBy: .equal, toItem: videoView, attribute: .right, multiplier: 1.0, constant: 0.0))
-//        self.view.addConstraint(NSLayoutConstraint(item: timerLabel, attribute: .top, relatedBy: .equal, toItem: videoView, attribute: .top, multiplier: 1.0, constant: 0.0))
-        
-//        self.view.bringSubview(toFront: timerLabel)
         
         textLabel.text = self.text
         
