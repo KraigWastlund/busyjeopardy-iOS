@@ -6,5 +6,8 @@ target 'busyjeopardy' do
   use_frameworks!
 
   # Pods for busyjeopardy
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Database'
 
 end
