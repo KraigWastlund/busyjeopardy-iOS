@@ -73,7 +73,7 @@ class Questions {
     static let question36 = JeopardyQuestion(x: 5, y: 5, question: "Han Solo was transporting these dangerous creatures when he was confronted by kanjiklub and the guardian death gang.", image: nil, videoName: nil)
     
     static func getQuestionAndOptionalImageAndvideoName(forX x: Int, forY y: Int) -> (String, UIImage?, String?) {
-        let questions = [question1, question2, question3, question4, question5, question7, question8, question9, question10, question11, question12, question13, question14, question15, question16, question17, question18, question19, question20, question21, question22, question23, question24, question25, question26, question27, question28, question29, question30, question31, question32, question33, question34, question35, question36]
+        let questions = [question1, question2, question3, question4, question5, question6, question7, question8, question9, question10, question11, question12, question13, question14, question15, question16, question17, question18, question19, question20, question21, question22, question23, question24, question25, question26, question27, question28, question29, question30, question31, question32, question33, question34, question35, question36]
         for question in questions {
             if question.x == x && question.y == y {
                 return (question.question, question.image, question.videoName)

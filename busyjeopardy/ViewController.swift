@@ -86,7 +86,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: ((self.jeopardyCollectionView.frame.size.width - 10) / 6), height: ((self.jeopardyCollectionView.frame.size.height - 28) / 6))
+        layout.itemSize = CGSize(width: ((self.jeopardyCollectionView.frame.size.width - 20) / 6), height: ((self.jeopardyCollectionView.frame.size.height - 28) / 6))
         layout.minimumLineSpacing = 2
         layout.minimumInteritemSpacing = 2
         self.jeopardyCollectionView.collectionViewLayout = layout

@@ -181,6 +181,7 @@
 				649738F720937FA300B297B1 /* Frameworks */,
 				649738F820937FA300B297B1 /* Resources */,
 				21E75B2B7C9F67885DEA81A8 /* [CP] Embed Pods Frameworks */,
+				2FB930203DEAE80687102EF0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -273,6 +274,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2FB930203DEAE80687102EF0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DA5160DDF60963A0A3769732 /* [CP] Check Pods Manifest.lock */ = {
