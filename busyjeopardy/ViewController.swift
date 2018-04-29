@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
 class ViewController: UIViewController {
     
@@ -67,6 +68,8 @@ class ViewController: UIViewController {
         jeopardyCollectionView.register(JeopardyCollectionCell.self, forCellWithReuseIdentifier: "cell")
         // Do any additional setup after loading the view, typically from a nib.
         configureSubviews()
+        
+        self.loadTeams()
     }
     
     func currentTeamSelection(team: Int) {
@@ -112,6 +115,30 @@ class ViewController: UIViewController {
         categoryTitlesView.titleLabel4.text = Questions.cat4Title
         categoryTitlesView.titleLabel5.text = Questions.cat5Title
         categoryTitlesView.titleLabel6.text = Questions.cat6Title
+    }
+}
+
+// MARK: - Private Methods
+
+extension ViewController {
+    private func loadTeams() {
+        if FirebaseAuth.sharedInstance.firebaseAuth.currentUser == nil {
+            FirebaseAuth.sharedInstance.signInAnonymously()
+        }
+        FirebaseDB.sharedInstance.getTeams { (teams) in
+            for (index, team) in teams.enumerated() {
+                switch index {
+                case 0:
+                    self.scoreBoard.team1View.name = team.name
+                case 1:
+                    self.scoreBoard.team2View.name = team.name
+                case 2:
+                    self.scoreBoard.team3View.name = team.name
+                default:
+                    self.scoreBoard.team4View.name = team.name
+                }
+            }
+        }
     }
 }
 
