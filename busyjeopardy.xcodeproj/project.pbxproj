@@ -29,6 +29,9 @@
 		6497390820937FA400B297B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6497390720937FA400B297B1 /* Assets.xcassets */; };
 		6497390B20937FA400B297B1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6497390920937FA400B297B1 /* LaunchScreen.storyboard */; };
 		649739152093829B00B297B1 /* ScoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649739142093829B00B297B1 /* ScoreBoardView.swift */; };
+		7802C76F2096529B00C917C0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7802C76E2096529B00C917C0 /* GoogleService-Info.plist */; };
+		7802C7792096687D00C917C0 /* FirebaseDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7802C7772096687D00C917C0 /* FirebaseDB.swift */; };
+		7802C77A2096687D00C917C0 /* FirebaseAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7802C7782096687D00C917C0 /* FirebaseAuth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +59,9 @@
 		6497390A20937FA400B297B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6497390C20937FA400B297B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		649739142093829B00B297B1 /* ScoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBoardView.swift; sourceTree = "<group>"; };
+		7802C76E2096529B00C917C0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		7802C7772096687D00C917C0 /* FirebaseDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseDB.swift; sourceTree = "<group>"; };
+		7802C7782096687D00C917C0 /* FirebaseAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseAuth.swift; sourceTree = "<group>"; };
 		7AEF965FD6298FFB1D30B412 /* Pods-busyjeopardy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-busyjeopardy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy.debug.xcconfig"; sourceTree = "<group>"; };
 		A451A6DF8D2B28191AC3316F /* Pods_busyjeopardy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_busyjeopardy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -132,16 +138,27 @@
 				648319AB2094BE0B001A2855 /* Images */,
 				649738FD20937FA300B297B1 /* AppDelegate.swift */,
 				649738FF20937FA300B297B1 /* ViewController.swift */,
+				7802C7762096687000C917C0 /* API */,
 				648319A62093C91C001A2855 /* JeopardyQuestions.swift */,
 				649739142093829B00B297B1 /* ScoreBoardView.swift */,
 				6497390120937FA300B297B1 /* Main.storyboard */,
 				6497390720937FA400B297B1 /* Assets.xcassets */,
 				6497390920937FA400B297B1 /* LaunchScreen.storyboard */,
 				6497390C20937FA400B297B1 /* Info.plist */,
+				7802C76E2096529B00C917C0 /* GoogleService-Info.plist */,
 				6497390420937FA300B297B1 /* busyjeopardy.xcdatamodeld */,
 				648319B82094DD57001A2855 /* Colors.swift */,
 			);
 			path = busyjeopardy;
+			sourceTree = "<group>";
+		};
+		7802C7762096687000C917C0 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				7802C7782096687D00C917C0 /* FirebaseAuth.swift */,
+				7802C7772096687D00C917C0 /* FirebaseDB.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 		EED15C21DF8E1434B9CD3497 /* Frameworks */ = {
@@ -164,7 +181,6 @@
 				649738F720937FA300B297B1 /* Frameworks */,
 				649738F820937FA300B297B1 /* Resources */,
 				21E75B2B7C9F67885DEA81A8 /* [CP] Embed Pods Frameworks */,
-				BC8AA5650CB3E7152541BBDD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -222,6 +238,7 @@
 				648319C62096295F001A2855 /* 4.mp4 in Resources */,
 				648319B62094C004001A2855 /* atst.jpg in Resources */,
 				6497390B20937FA400B297B1 /* LaunchScreen.storyboard in Resources */,
+				7802C76F2096529B00C917C0 /* GoogleService-Info.plist in Resources */,
 				6497390820937FA400B297B1 /* Assets.xcassets in Resources */,
 				648319BC20955099001A2855 /* 1.mp4 in Resources */,
 				648319C32096295F001A2855 /* 5.mp4 in Resources */,
@@ -240,28 +257,22 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BC8AA5650CB3E7152541BBDD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-busyjeopardy/Pods-busyjeopardy-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DA5160DDF60963A0A3769732 /* [CP] Check Pods Manifest.lock */ = {
@@ -289,12 +300,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7802C77A2096687D00C917C0 /* FirebaseAuth.swift in Sources */,
 				6497390020937FA300B297B1 /* ViewController.swift in Sources */,
 				648319B92094DD57001A2855 /* Colors.swift in Sources */,
 				649738FE20937FA300B297B1 /* AppDelegate.swift in Sources */,
 				649739152093829B00B297B1 /* ScoreBoardView.swift in Sources */,
 				6497390620937FA300B297B1 /* busyjeopardy.xcdatamodeld in Sources */,
 				648319A72093C91C001A2855 /* JeopardyQuestions.swift in Sources */,
+				7802C7792096687D00C917C0 /* FirebaseDB.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
