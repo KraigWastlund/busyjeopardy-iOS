@@ -18,11 +18,8 @@ class ViewController: UIViewController {
     
     var tempTimer: Timer!
     
-    var previousTeam: Int?
+    var lastTeamToGetAnAnswerCorrect: Int?
     var currentTeam: Int = 0 {
-        willSet {
-            previousTeam = currentTeam
-        }
         didSet {
             scoreBoard.team1View.setSelectionState(state: .unselected)
             scoreBoard.team2View.setSelectionState(state: .unselected)
@@ -166,27 +163,36 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
             return
         }
         
-        var category: String!
         var points: String!
         if indexPath.row < 6 {
-            category = categoryTitlesView.titleLabel1.text
             points = "100"
         } else if indexPath.row < 12 {
-            category = categoryTitlesView.titleLabel2.text
             points = "200"
         } else if indexPath.row < 18 {
-            category = categoryTitlesView.titleLabel3.text
             points = "300"
         } else if indexPath.row < 24 {
-            category = categoryTitlesView.titleLabel4.text
             points = "400"
         } else if indexPath.row < 30 {
-            category = categoryTitlesView.titleLabel5.text
             points = "500"
         } else {
-            category = categoryTitlesView.titleLabel6.text
             points = "600"
         }
+            
+        var category: String!
+        if indexPath.row % 6 == 0 {
+            category = categoryTitlesView.titleLabel1.text
+        } else if indexPath.row % 6 == 1 {
+            category = categoryTitlesView.titleLabel2.text
+        } else if indexPath.row % 6 == 2 {
+            category = categoryTitlesView.titleLabel3.text
+        } else if indexPath.row % 6 == 3 {
+            category = categoryTitlesView.titleLabel4.text
+        } else if indexPath.row % 6 == 4 {
+            category = categoryTitlesView.titleLabel5.text
+        } else if indexPath.row % 6 == 5 {
+            category = categoryTitlesView.titleLabel6.text
+        }
+        
         let msg = "Category: \(category!) \n Points: \(points!)"
         let alert = UIAlertController(title: "You sure?", message: msg, preferredStyle: .alert)
         let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
@@ -202,11 +208,11 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
     
     func didSelect(x: Int, y: Int) {
         print("x: \(x) y: \(y)")
-        let (question, image, url) = Questions.getQuestionAndOptionalImageAndVideoURL(forX: x, forY: y)
+        let (question, image, url) = Questions.getQuestionAndOptionalImageAndvideoName(forX: x, forY: y)
         print(question)
         
         self.currentPointValueIndex = y
-        self.tempTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
+        //self.tempTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
         
         if image != nil || url != nil {
             let vc = MediaQuestionPresentationViewController()
@@ -214,7 +220,7 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
             vc.text = question
             vc.points = y
             vc.image = image
-            vc.videoURL = url
+            vc.videoName = url
             let nc = UINavigationController(rootViewController: vc)
             nc.isNavigationBarHidden = true
             self.present(nc, animated: true, completion: { [weak self] in
@@ -279,10 +285,11 @@ extension ViewController {
             default:
                 assert(false)
             }
+            self?.lastTeamToGetAnAnswerCorrect = self?.currentTeam
         }
         alert.addAction(action)
         alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: { [weak self] (action: UIAlertAction) in
-            if let previous = self?.previousTeam {
+            if let previous = self?.lastTeamToGetAnAnswerCorrect {
                 self?.scoreBoard.team1View.setSelectionState(state: .unselected)
                 self?.scoreBoard.team2View.setSelectionState(state: .unselected)
                 self?.scoreBoard.team3View.setSelectionState(state: .unselected)
@@ -474,14 +481,14 @@ class MediaQuestionPresentationViewController: UIViewController {
     private let imageView = UIImageView()
     var points: Int!
     
-    var videoURL: String?
+    var videoName: String?
     var image: UIImage?
     var text: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         if image == nil {
-            assert(videoURL != nil)
+            assert(videoName != nil)
         }
 
         self.view.backgroundColor = .white
@@ -509,21 +516,29 @@ class MediaQuestionPresentationViewController: UIViewController {
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerY, relatedBy: .equal, toItem: videoView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         self.view.addConstraint(NSLayoutConstraint(item: imageView, attribute: .centerX, relatedBy: .equal, toItem: videoView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
         
-        textLabel.text = self.text
-        
-        if let url = videoURL {
+        if let name = videoName {
+            guard let path = Bundle.main.path(forResource: name, ofType:"mp4") else {
+                debugPrint("video.m4v not found")
+                return
+            }
+            
             imageView.isHidden = true
             smallVideoPlayerViewController.showsPlaybackControls = false
-            smallVideoPlayerViewController.player = AVPlayer(url: URL(fileURLWithPath: url))
-            
+            smallVideoPlayerViewController.player = AVPlayer(url: URL(fileURLWithPath: path))
             videoView.addSubview(smallVideoPlayerViewController.view)
-            
             smallVideoPlayerViewController.view.frame = videoView.bounds
-            
             smallVideoPlayerViewController.player?.play()
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: smallVideoPlayerViewController.player!.currentItem)
         } else {
+            textLabel.text = self.text
             videoView.isHidden = true
             imageView.image = self.image!
         }
+    }
+    
+    @objc private func playerDidFinishPlaying() {
+        textLabel.text = self.text
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
 }
