@@ -70,6 +70,15 @@ class ViewController: UIViewController {
         configureSubviews()
         
         self.loadTeams()
+        FirebaseDB.sharedInstance.getBuzzerWinner { (team: Team) in
+            for (index, teamView) in [self.scoreBoard.team1View, self.scoreBoard.team2View, self.scoreBoard.team3View, self.scoreBoard.team4View].enumerated() {
+                if teamView.uuid == team.id {
+                    self.currentTeam = index
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
     func currentTeamSelection(team: Int) {
@@ -81,6 +90,10 @@ class ViewController: UIViewController {
         let ran = Int(arc4random_uniform(4))
         self.currentTeam = ran
         self.tempTimer.invalidate()
+    }
+    
+    @objc private func rotated() {
+        // maybe later
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -125,17 +138,25 @@ extension ViewController {
         if FirebaseAuth.sharedInstance.firebaseAuth.currentUser == nil {
             FirebaseAuth.sharedInstance.signInAnonymously()
         }
-        FirebaseDB.sharedInstance.getTeams { (teams) in
+        FirebaseDB.sharedInstance.getTeamsListener { (teams) in
             for (index, team) in teams.enumerated() {
                 switch index {
                 case 0:
                     self.scoreBoard.team1View.name = team.name
+                    self.scoreBoard.team1View.uuid = team.id
+                    self.scoreBoard.team1View.points = "\(team.points)"
                 case 1:
                     self.scoreBoard.team2View.name = team.name
+                    self.scoreBoard.team2View.uuid = team.id
+                    self.scoreBoard.team2View.points = "\(team.points)"
                 case 2:
                     self.scoreBoard.team3View.name = team.name
+                    self.scoreBoard.team3View.uuid = team.id
+                    self.scoreBoard.team3View.points = "\(team.points)"
                 default:
                     self.scoreBoard.team4View.name = team.name
+                    self.scoreBoard.team4View.uuid = team.id
+                    self.scoreBoard.team4View.points = "\(team.points)"
                 }
             }
         }
@@ -224,6 +245,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         let alert = UIAlertController(title: "You sure?", message: msg, preferredStyle: .alert)
         let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
             cell.userDidSelect = true
+            FirebaseDB.sharedInstance.updateReady()
         }
         alert.addAction(action)
         alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
@@ -241,7 +263,7 @@ extension ViewController: JeopardyCollectionCellSelectionDelegate {
         self.currentPointValueIndex = y
         
         // simulate someone clicking the buzzer
-        self.tempTimer = Timer.scheduledTimer(timeInterval: 145, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
+        // self.tempTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(tempSetCurrentTeam), userInfo: nil, repeats: false)
         
         if image != nil || url != nil {
             let vc = MediaQuestionPresentationViewController()
@@ -299,16 +321,20 @@ extension ViewController {
             switch self?.currentTeam {
             case 0:
                 let currentPoints = Int((self?.scoreBoard.team1View.points)!)
-                self?.scoreBoard.team1View.points = "\(p + currentPoints!)"
+                // self?.scoreBoard.team1View.points = "\(p + currentPoints!)"
+                FirebaseDB.sharedInstance.updateScore(points: currentPoints! + p, teamIndex: (self?.currentTeam)!)
             case 1:
                 let currentPoints = Int((self?.scoreBoard.team2View.points)!)
-                self?.scoreBoard.team2View.points = "\(p + currentPoints!)"
+                // self?.scoreBoard.team2View.points = "\(p + currentPoints!)"
+                FirebaseDB.sharedInstance.updateScore(points: currentPoints! + p, teamIndex: (self?.currentTeam)!)
             case 2:
                 let currentPoints = Int((self?.scoreBoard.team3View.points)!)
-                self?.scoreBoard.team3View.points = "\(p + currentPoints!)"
+                // self?.scoreBoard.team3View.points = "\(p + currentPoints!)"
+                FirebaseDB.sharedInstance.updateScore(points: currentPoints! + p, teamIndex: (self?.currentTeam)!)
             case 3:
                 let currentPoints = Int((self?.scoreBoard.team4View.points)!)
-                self?.scoreBoard.team4View.points = "\(p + currentPoints!)"
+                // self?.scoreBoard.team4View.points = "\(p + currentPoints!)"
+                FirebaseDB.sharedInstance.updateScore(points: currentPoints! + p, teamIndex: (self?.currentTeam)!)
             default:
                 assert(false)
             }

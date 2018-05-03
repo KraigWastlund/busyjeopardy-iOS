@@ -10,6 +10,7 @@ import FirebaseDatabase
 
 struct Team {
     var id: String
+    var points: Int
     var name: String
     var isConnected: Bool
     var buzzerTapDate: Date?
@@ -24,6 +25,20 @@ final class FirebaseDB {
     func updateReset() {
         let resetDict = ["reset": true] as [String : Any]
         FirebaseDB.sharedInstance.reference.updateChildValues(resetDict)
+    }
+    
+    func updateReady() {
+        let rdyDict = ["ready": true] as [String : Any]
+        FirebaseDB.sharedInstance.reference.updateChildValues(rdyDict)
+    }
+    
+    func updateScore(points: Int, teamIndex: Int) {
+        var team: Team!
+        self.getTeams { (teams) in
+            team = teams[teamIndex]
+            let teamDict = ["team_name": team.name, "is_connected": true, "points": points] as [String : Any]
+            self.reference.child("teams").child(team.id).setValue(teamDict)
+        }
     }
     
     func getBuzzerWinner(completion: @escaping (_ winner: Team) -> Void) {
@@ -72,6 +87,7 @@ final class FirebaseDB {
                     var name = ""
                     var buzzerTap: Date? = nil
                     var isConnected = false
+                    var points = 0
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -81,7 +97,10 @@ final class FirebaseDB {
                     if let teamIsConnected = teamObject["is_connected"] as? Bool {
                         isConnected = teamIsConnected
                     }
-                    teamsArray.append(Team(id: teams.key, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
+                    if let p = teamObject["points"] as? Int {
+                        points = p
+                    }
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
                 }
             }
             completion(teamsArray)
@@ -96,6 +115,7 @@ final class FirebaseDB {
                     var name = ""
                     var buzzerTap: Date? = nil
                     var isConnected = false
+                    var points = 0
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -105,7 +125,10 @@ final class FirebaseDB {
                     if let teamIsConnected = teamObject["is_connected"] as? Bool {
                         isConnected = teamIsConnected
                     }
-                    teamsArray.append(Team(id: teams.key, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
+                    if let p = teamObject["points"] as? Int {
+                        points = p
+                    }
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
                 }
             }
             completion(teamsArray)

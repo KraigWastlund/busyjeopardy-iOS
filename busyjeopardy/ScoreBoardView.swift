@@ -56,6 +56,8 @@ enum TeamSelectionState {
 
 class TeamScoreView: UIView {
     
+    var uuid: String!
+    
     var name: String! {
         didSet {
             nameLabel.text = name
