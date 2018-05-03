@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     var jeopardyCollectionView: UICollectionView!
     
     var currentPointValueIndex: Int!
+    var selectedIndexes = [Int]()
     
     var tempTimer: Timer!
     
@@ -79,6 +80,7 @@ class ViewController: UIViewController {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        self.populateChosenCells()
     }
     
     func currentTeamSelection(team: Int) {
@@ -139,24 +141,20 @@ extension ViewController {
             FirebaseAuth.sharedInstance.signInAnonymously()
         }
         FirebaseDB.sharedInstance.getTeamsListener { (teams) in
-            for (index, team) in teams.enumerated() {
-                switch index {
-                case 0:
-                    self.scoreBoard.team1View.name = team.name
-                    self.scoreBoard.team1View.uuid = team.id
-                    self.scoreBoard.team1View.points = "\(team.points)"
-                case 1:
-                    self.scoreBoard.team2View.name = team.name
-                    self.scoreBoard.team2View.uuid = team.id
-                    self.scoreBoard.team2View.points = "\(team.points)"
-                case 2:
-                    self.scoreBoard.team3View.name = team.name
-                    self.scoreBoard.team3View.uuid = team.id
-                    self.scoreBoard.team3View.points = "\(team.points)"
-                default:
-                    self.scoreBoard.team4View.name = team.name
-                    self.scoreBoard.team4View.uuid = team.id
-                    self.scoreBoard.team4View.points = "\(team.points)"
+            for team in teams {
+                for teamView in [self.scoreBoard.team1View, self.scoreBoard.team2View, self.scoreBoard.team3View, self.scoreBoard.team4View] {
+                    if teamView.uuid == nil {
+                        teamView.name = team.name
+                        teamView.uuid = team.id
+                        teamView.points = "\(team.points)"
+                        break
+                    } else {
+                        if team.id == teamView.uuid {
+                            teamView.points = "\(team.points)"
+                            teamView.name = team.name
+                            break
+                        }
+                    }
                 }
             }
         }
@@ -201,15 +199,21 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         }
         cell.set(title: title!)
         
+        if self.selectedIndexes.contains(indexPath.row) {
+            cell.label.backgroundColor = JeopardyCollectionCell.selectionColor
+        }
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! JeopardyCollectionCell
         
-        if cell.userDidSelect == true {
+        if cell.label.backgroundColor == JeopardyCollectionCell.selectionColor {
             return
         }
+        
+        self.selectedIndexes.append(indexPath.row)
         
         var points: String!
         if indexPath.row < 6 {
@@ -246,10 +250,19 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
             cell.userDidSelect = true
             FirebaseDB.sharedInstance.updateReady()
+            let rdyDict = ["chosen_indexes": self.selectedIndexes.] as [String : Any]
+            FirebaseDB.sharedInstance.reference.updateChildValues(rdyDict)
         }
         alert.addAction(action)
         alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
         self.present(alert, animated:true, completion: nil)
+    }
+    
+    private func populateChosenCells() {
+        FirebaseDB.sharedInstance.getSelectedCells { (array) in
+            self.selectedIndexes = array
+            self.jeopardyCollectionView.reloadData()
+        }
     }
 }
 
@@ -371,8 +384,8 @@ protocol JeopardyCollectionCellSelectionDelegate: class {
 
 class JeopardyCollectionCell: UICollectionViewCell {
     
-    private let label = UILabel()
-    private let selectionColor: UIColor = BSYColor.c8
+    let label = UILabel()
+    static let selectionColor: UIColor = BSYColor.c8
     
     var x: Int!
     var y: Int!
@@ -381,11 +394,11 @@ class JeopardyCollectionCell: UICollectionViewCell {
     
     var userDidSelect: Bool? {
         didSet {
-            if label.backgroundColor != selectionColor {
+            if label.backgroundColor != JeopardyCollectionCell.selectionColor {
                 self.selectionDelegate?.didSelect(x: self.x, y: self.y)
             }
             if userDidSelect == true {
-                label.backgroundColor = selectionColor
+                label.backgroundColor = JeopardyCollectionCell.selectionColor
             }
         }
     }

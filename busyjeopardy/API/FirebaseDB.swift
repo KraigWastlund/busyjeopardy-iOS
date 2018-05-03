@@ -79,6 +79,18 @@ final class FirebaseDB {
         }
     }
     
+    func getSelectedCells(completion: @escaping (_ selectedIndexes: [Int]) -> Void) {
+        self.reference.child("chosen_indexes").observeSingleEvent(of: .value) { (snapshot) in
+            var array = [Int]()
+            for chosenIndexes in snapshot.children.allObjects as! [DataSnapshot] {
+                if let index = chosenIndexes.value as? Int {
+                    array.append(index)
+                }
+            }
+            completion(array)
+        }
+    }
+    
     func getTeams(completion: @escaping (_ teams: [Team]) -> Void) {
         self.reference.child("teams").observeSingleEvent(of: .value) { (snapshot) in
             var teamsArray = [Team]()
