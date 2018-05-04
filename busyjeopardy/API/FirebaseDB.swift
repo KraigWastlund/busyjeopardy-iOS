@@ -14,6 +14,7 @@ struct Team {
     var name: String
     var isConnected: Bool
     var buzzerTapDate: Date?
+    var isWinner: Bool
 }
 
 final class FirebaseDB {
@@ -43,14 +44,16 @@ final class FirebaseDB {
     
     func getBuzzerWinner(completion: @escaping (_ winner: Team) -> Void) {
         self.getTeamsListener { (teams) in
-            var teamsArray = teams
-            teamsArray.sort(by: {
-                if let date1 = $0.buzzerTapDate, let date2 = $1.buzzerTapDate, date1 > date2 {
+            var filteredTeams = teams.filter({ $0.buzzerTapDate != nil })
+            
+            filteredTeams.sort(by: {
+                if let date1 = $0.buzzerTapDate, let date2 = $1.buzzerTapDate, date1.compare(date2) == .orderedAscending {
                     return true
                 }
                 return false
             })
-            if let winningTeam = teamsArray.last, winningTeam.buzzerTapDate != nil {
+            
+            if let winningTeam = filteredTeams.first, winningTeam.buzzerTapDate != nil {
                 completion(winningTeam)
             }
         }
@@ -100,6 +103,7 @@ final class FirebaseDB {
                     var buzzerTap: Date? = nil
                     var isConnected = false
                     var points = 0
+                    var isWinner = false
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -112,7 +116,10 @@ final class FirebaseDB {
                     if let p = teamObject["points"] as? Int {
                         points = p
                     }
-                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
+                    if let teamIsWinner = teamObject["is_winner"] as? Bool {
+                        isWinner = teamIsWinner
+                    }
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap, isWinner: isWinner))
                 }
             }
             completion(teamsArray)
@@ -128,6 +135,7 @@ final class FirebaseDB {
                     var buzzerTap: Date? = nil
                     var isConnected = false
                     var points = 0
+                    var isWinner = false
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -140,7 +148,10 @@ final class FirebaseDB {
                     if let p = teamObject["points"] as? Int {
                         points = p
                     }
-                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
+                    if let teamIsWinner = teamObject["is_winner"] as? Bool {
+                        isWinner = teamIsWinner
+                    }
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap, isWinner: isWinner))
                 }
             }
             completion(teamsArray)
