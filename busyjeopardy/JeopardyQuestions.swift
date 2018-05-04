@@ -58,10 +58,10 @@ class Questions {
     static let cat5Title = "CREATURES"
     static let question25 = JeopardyQuestion(x: 4, y: 0, question: "The most well known of this species is Chewbacca.", image: nil, videoName: nil)
     static let question26 = JeopardyQuestion(x: 4, y: 1, question: "With the looks of a cross between a teddy bear and a shih tzu, these creatures are native to the moon of Endor.", image: nil, videoName: nil)
-    static let question27 = JeopardyQuestion(x: 4, y: 2, question: "These animals were created by the production team out of necessity, due to the large amount of puffins on Skellig Micheal while filming scenes in 'The Last Jedi'", image: nil, videoName: nil)
+    static let question27 = JeopardyQuestion(x: 4, y: 2, question: "These animals were created by the production team out of necessity, due to the large amount of puffins on Skellig Island while filming scenes in 'The Last Jedi'", image: nil, videoName: nil)
     static let question28 = JeopardyQuestion(x: 4, y: 3, question: "Jabba the Hutt keeps one of these creatures in his dungeon, often feeding it prisoners.", image: nil, videoName: nil)
     static let question29 = JeopardyQuestion(x: 4, y: 4, question: "These creatures are parasites that chew on power cables and energy conductors of starships.", image: nil, videoName: nil)
-    static let question30 = JeopardyQuestion(x: 4, y: 5, question: "Han Solo was transporting these dangerous creatures when he was confronted by kanjiklub and the guardian death gang.", image: nil, videoName: nil)
+    static let question30 = JeopardyQuestion(x: 4, y: 5, question: "Han Solo was transporting these dangerous creatures when he was confronted by kanjiklub and the guavian death gang.", image: nil, videoName: nil)
     
     // sixth cat - Keith's Corner
     static let cat6Title = "Keith's Corner"
