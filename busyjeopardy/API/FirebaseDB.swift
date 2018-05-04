@@ -52,11 +52,8 @@ final class FirebaseDB {
                 return false
             })
             
-            let winningTeams = teams.filter({ $0.isWinner == false })
-            if winningTeams.count == teams.count {
-                if let winningTeam = filteredTeams.first, winningTeam.buzzerTapDate != nil {
-                    completion(winningTeam)
-                }
+            if let winningTeam = filteredTeams.first, winningTeam.buzzerTapDate != nil {
+                completion(winningTeam)
             }
         }
     }
@@ -105,7 +102,6 @@ final class FirebaseDB {
                     var buzzerTap: Date? = nil
                     var isConnected = false
                     var points = 0
-                    var isWinner = false
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -118,7 +114,7 @@ final class FirebaseDB {
                     if let p = teamObject["points"] as? Int {
                         points = p
                     }
-                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap, isWinner: isWinner))
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
                 }
             }
             completion(teamsArray)
@@ -134,7 +130,6 @@ final class FirebaseDB {
                     var buzzerTap: Date? = nil
                     var isConnected = false
                     var points = 0
-                    var isWinner = false
                     if let teamName = teamObject["team_name"] as? String {
                         name = teamName
                     }
@@ -147,7 +142,7 @@ final class FirebaseDB {
                     if let p = teamObject["points"] as? Int {
                         points = p
                     }
-                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap, isWinner: isWinner))
+                    teamsArray.append(Team(id: teams.key, points: points, name: name, isConnected: isConnected, buzzerTapDate: buzzerTap))
                 }
             }
             completion(teamsArray)
