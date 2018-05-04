@@ -250,7 +250,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         let action = UIAlertAction(title: "YES", style: .default) { (alert: UIAlertAction) in
             cell.userDidSelect = true
             FirebaseDB.sharedInstance.updateReady()
-            let rdyDict = ["chosen_indexes": self.selectedIndexes.] as [String : Any]
+            let rdyDict = ["chosen_indexes": self.selectedIndexes] as [String : Any]
             FirebaseDB.sharedInstance.reference.updateChildValues(rdyDict)
         }
         alert.addAction(action)
